@@ -52,6 +52,10 @@ class App{
 	}	
     
     initScene(){
+        const geometry = new THREE.BoxBufferGeometry( 0.06, 0.06, 0.06 );
+        const material = new THREE.MeshPhongMaterial( { color: 0xffffff * Math.random() } );
+        this.GeoMesh = new THREE.Mesh( geometry, material );
+        this.GeoMesh.visible = false;
         this.loadingBar = new LoadingBar();
         
         this.assetsPath = './assets/';
@@ -114,10 +118,10 @@ class App{
         const config = {
             panelSize: { width: 0.15, height: 0.038 },
             height: 128,
-            info:{ type: "text" }
+            info:{ type: "text" },
         }
         const content = {
-            info: "Debug info"
+            info: "Debug info",
         }
         
         const ui = new CanvasUI( content, config );
@@ -145,11 +149,12 @@ class App{
         this.gestures = new ControllerGestures( this.renderer );
         this.gestures.addEventListener( 'tap', (ev)=>{
             //console.log( 'tap' ); 
+            
             self.ui.updateElement('info', 'tap' );
-            if (!self.knight.object.visible){
-                self.knight.object.visible = true;
-                self.knight.object.position.set( 0, -0.3, -0.5 ).add( ev.position );
-                self.scene.add( self.knight.object ); 
+            if (!self.GeoMesh.visible){
+                self.GeoMesh.visible = true;
+                self.GeoMesh.position.set(0, -0.3, -0.5 ).add(ev.position);
+                self.scene.add(self.GeoMesh);
             }
         });
         this.gestures.addEventListener( 'doubletap', (ev)=>{
@@ -163,19 +168,19 @@ class App{
         this.gestures.addEventListener( 'pan', (ev)=>{
             //console.log( ev );
             if (ev.initialise !== undefined){
-                self.startPosition = self.knight.object.position.clone();
+                self.startPosition = self.GeoMesh.position.clone();
             }else{
                 const pos = self.startPosition.clone().add( ev.delta.multiplyScalar(3) );
-                self.knight.object.position.copy( pos );
+                self.GeoMesh.position.copy( pos );
                 self.ui.updateElement('info', `pan x:${ev.delta.x.toFixed(3)}, y:${ev.delta.y.toFixed(3)}, x:${ev.delta.z.toFixed(3)}` );
             } 
         });
         this.gestures.addEventListener( 'swipe', (ev)=>{
             //console.log( ev );   
             self.ui.updateElement('info', `swipe ${ev.direction}` );
-            if (self.knight.object.visible){
-                self.knight.object.visible = false;
-                self.scene.remove( self.knight.object ); 
+            if (self.GeoMesh.visible){
+                self.GeoMesh.visible = false;
+                self.scene.remove( self.GeoMesh ); 
             }
         });
         this.gestures.addEventListener( 'pinch', (ev)=>{
